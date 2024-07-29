@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Pizzería</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #ddd;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #222;
+            padding: 10px 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            color: #fff;
+        }
+        .main-content {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        nav {
+            margin-right: 20px;
+        }
+        button {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px 20px;
+            background-color: #555;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+        button:hover {
+            background-color: #666;
+        }
+        #imagenPizza img {
+            max-width: 100%;
+            max-height: 400px;
+        }
+        section {
+            max-width: 60%;
+        }
+    </style>
+    <link rel="stylesheet" href="css/menu.css">
+</head>
+<body>
+
+    <header>
+        <h1>Menú de Pizzería</h1>
+    </header>
+
+    <div class="main-content">
+        <nav>
+            <button onclick="mostrarPizza('Pizza Margarita')">Pizza Margarita</button>
+            <button onclick="mostrarPizza('Pizza Pepperoni')">Pizza Pepperoni</button>
+            <button onclick="mostrarPizza('Pizza Vegetariana')">Pizza Vegetariana</button>
+            <button onclick="mostrarPizza('Pizza Hawaiana')">Pizza Hawaiana</button>
+            <button onclick="mostrarPizza('Pizza BBQ')">Pizza BBQ</button>
+
+            <div class="nav-bottom">
+                <button onclick="ordenar()">Ordenar</button>
+            </div>
+
+            <div class="nav-bottom2">
+                <button onclick="regresar()">Regresar</button>
+            </div>
+        </nav>
+
+        <section>
+            <div id="imagenPizza">
+                <!-- Aquí se mostrará la imagen de la pizza seleccionada -->
+            </div>
+            <div id="descripcionPizza">
+                <!-- Aquí se mostrará la descripción de la pizza seleccionada -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function mostrarPizza(nombrePizza) {
+            const imagenes = {
+                'Pizza Margarita': 'images/menu/marga.png',
+                'Pizza Pepperoni': 'images/menu/pepe.png',
+                'Pizza Vegetariana': 'images/menu/vegi.png',
+                'Pizza Hawaiana': 'images/menu/hawaian.png',
+                'Pizza BBQ': 'images/menu/bbq.png'
+            };
+
+            const descripciones = {
+                'Pizza Margarita': 'Una clásica pizza con salsa de tomate, \nmozzarella fresca y hojas de albahaca.',
+                'Pizza Pepperoni': 'Cubierta con rodajas de pepperoni picante y queso mozzarella sobre una capa de salsa de tomate.',
+                'Pizza Vegetariana': 'Una deliciosa combinación de pimientos, cebollas, champiñones, aceitunas y tomate.',
+                'Pizza Hawaiana': 'El sabor dulce de la piña junto con jamón y queso mozzarella sobre salsa de tomate.',
+                'Pizza BBQ': 'Pollo al BBQ, cebolla roja y cilantro sobre una base de salsa BBQ y mozzarella.'
+            };
+
+            const imagenPizza = document.getElementById('imagenPizza');
+            imagenPizza.innerHTML = `<img src="${imagenes[nombrePizza]}" alt="Imagen de ${nombrePizza}" style="max-width: 100%; max-height: 400px;">`;
+
+            const descripcionPizza = document.getElementById('descripcionPizza');
+            descripcionPizza.textContent = descripciones[nombrePizza];
+        }
+
+        function ordenar() {
+            window.location.href = 'ordenar.jsp';
+        }
+
+        function regresar() {
+            window.location.href = 'index.jsp';
+        }
+    </script>
+
+</body>
+</html>

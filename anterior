@@ -1,0 +1,106 @@
+<%@ page import="java.sql.*, java.util.Base64, javax.servlet.ServletContext" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page pageEncoding="UTF-8" %>
+
+<%
+    String dbPath = application.getInitParameter("dbPath");
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+        Class.forName("org.sqlite.JDBC");
+        connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+        statement = connection.createStatement();
+
+        // Consultar todas las pizzas
+        resultSet = statement.executeQuery("SELECT id, nombre, imagen, ingredientes FROM pizzas");
+
+        out.println("<h2>Selecciona una pizza:</h2>");
+        out.println("<form action='carrito.jsp' method='post'>");
+
+        while (resultSet.next()) {
+            int pizzaId = resultSet.getInt("id");
+            String pizzaNombre = resultSet.getString("nombre");
+            String ingredientes = resultSet.getString("ingredientes");
+            byte[] imagenBytes = resultSet.getBytes("imagen");
+            String imagenBase64 = Base64.getEncoder().encodeToString(imagenBytes);
+
+            // Muestra la pizza y su descripción
+            out.println("<div>");
+            out.println("<img src='data:image/jpeg;base64," + imagenBase64 + "' alt='" + pizzaNombre + "' style='width:100px;height:100px;'>");
+            out.println("<p>" + pizzaNombre + "</p>");
+
+            // Botón para mostrar ingredientes
+            out.println("<button type='button' onclick='mostrarIngredientes(\"" + pizzaNombre + "\", \"" + ingredientes + "\")'>Mostrar Ingredientes</button>");
+
+            // Botón para añadir tamaño
+            out.println("<button type='button' onclick='mostrarTamanos(\"" + pizzaNombre + "\", " + pizzaId + ")'>Añadir</button>");
+
+            out.println("</div>");
+        }
+
+        out.println("<br>");
+
+        // Botón para regresar
+        out.println("<input type='button' value='Regresar' onclick='history.back()'>");
+
+        // Botón para ir a Carrito
+        out.println("<input type='submit' value='Ir a Carrito'></form>");
+
+        // Div para mostrar nombre e ingredientes
+        out.println("<div id='infoPizza'></div>");
+
+        // Script JavaScript para mostrar ingredientes al hacer clic en el botón
+        out.println("<script>");
+        out.println("function mostrarIngredientes(nombre, ingredientes) {");
+        out.println("var infoPizza = 'Nombre: ' + nombre + '<br>Ingredientes: ' + ingredientes;");
+        out.println("document.getElementById('infoPizza').innerHTML = infoPizza;");
+        out.println("}");
+
+        // Función para mostrar tamaños al hacer clic en el botón Añadir
+        out.println("function mostrarTamanos(nombrePizza, idPizza) {");
+        out.println("var tamanos = obtenerTamanos();");
+        out.println("var html = 'Tamaño para ' + nombrePizza + ': <select id=\"selectTamanos\">';");
+        out.println("for (var i = 0; i < tamanos.length; i++) {");
+        out.println("html += '<option value=\"' + tamanos[i].id + '\">' + tamanos[i].nombre + '</option>';");
+        out.println("}");
+        out.println("html += '</select>';");
+        out.println("html += '<button type=\"button\" onclick=\"agregarPedido(' + idPizza + ')\">OK</button>';");
+        out.println("html += '<button type=\"button\" onclick=\"cancelarPedido()\">Cancelar</button>';");
+        out.println("document.getElementById('infoPizza').innerHTML = html;");
+        out.println("}");
+
+        // Función para obtener los tamaños desde el servidor (podría hacerse en el servidor también)
+        out.println("function obtenerTamanos() {");
+        out.println("return [{id: 1, nombre: 'Chico'}, {id: 2, nombre: 'Mediano'}, {id: 3, nombre: 'Grande'}];");
+        out.println("}");
+
+        // Función para agregar el pedido
+        out.println("function agregarPedido(idPizza) {");
+        out.println("var selectTamanos = document.getElementById('selectTamanos');");
+        out.println("var idTamano = selectTamanos.value;");
+        out.println("var nombreTamano = selectTamanos.options[selectTamanos.selectedIndex].text;");
+        out.println("var infoPedido = 'Pizza: ' + idPizza + ', Tamaño: ' + nombreTamano + ', ID Tamaño: ' + idTamano;");
+        out.println("alert(infoPedido);");  // Mostrar alerta con los datos (puedes quitarlo cuando estés listo para insertar en la base de datos)
+        out.println("}");
+
+        // Función para cancelar el pedido
+        out.println("function cancelarPedido() {");
+        out.println("document.getElementById('infoPizza').innerHTML = '';");
+        out.println("}");
+        
+        out.println("</script>");
+
+    } catch (Exception e) {
+        out.println("Error al consultar pizzas: " + e.getMessage());
+    } finally {
+        try {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+%>
